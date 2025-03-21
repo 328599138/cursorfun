@@ -29,7 +29,7 @@ export function PageLayout({ children }: PageLayoutProps) {
           </div>
         </div>
       </header>
-      <main>
+      <main className="min-h-screen w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {children}
       </main>
       <ChatGroup />
