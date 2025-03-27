@@ -1,0 +1,299 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    /* 主色调 - 从Cursor官网提取的渐变色 */
+    --gradient-purple: 270 76% 40%;     /* 左侧紫色 */
+    --gradient-pink: 330 80% 55%;       /* 中间偏粉色 */
+    --gradient-green: 125 75% 40%;      /* 右侧绿色 */
+    
+    /* 主色调 - 使用截图中Cursor官网的蓝色为基础 */
+    --primary-50: 220 100% 97%;
+    --primary-100: 220 100% 95%; 
+    --primary-200: 220 100% 90%;
+    --primary-300: 220 100% 80%;
+    --primary-400: 220 100% 70%;
+    --primary-500: 220 100% 60%; /* Cursor官网主蓝色 */
+    --primary-600: 220 100% 50%;
+    --primary-700: 220 100% 40%;
+    --primary-800: 220 100% 30%;
+    --primary-900: 220 100% 20%;
+    --primary-950: 220 100% 10%;
+    
+    /* 中性色调 - 接近苹果设计 */
+    --neutral-50: 210 30% 98%;
+    --neutral-100: 210 25% 96%;
+    --neutral-200: 214 20% 93%;
+    --neutral-300: 213 15% 89%;
+    --neutral-400: 212 12% 78%;
+    --neutral-500: 212 10% 56%;
+    --neutral-600: 213 10% 46%;
+    --neutral-700: 214 12% 36%;
+    --neutral-800: 216 15% 26%;
+    --neutral-900: 218 18% 18%;
+    --neutral-950: 220 20% 10%;
+    
+    /* 系统颜色 - 苹果系统色 */
+    --success: 142 76% 45%; /* #34C759 - 苹果绿 */
+    --warning: 36 94% 57%; /* #FF9500 - 苹果橙 */
+    --error: 0 84% 60%; /* #FF3B30 - 苹果红 */
+    --info: 199 89% 48%; /* #5AC8FA - 苹果浅蓝 */
+    --purple: 268 82% 60%; /* #AF52DE - 苹果紫 */
+    --pink: 336 79% 65%; /* #FF2D55 - 苹果粉红 */
+    --teal: 181 91% 48%; /* #5AC8FA - 苹果青 */
+    
+    /* 主题变量 - 浅色模式 */
+    --background: var(--neutral-50);
+    --foreground: var(--neutral-950);
+    --card: 0 0% 100%;
+    --card-foreground: var(--neutral-950);
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--neutral-950);
+    --primary: var(--primary-600);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--neutral-100);
+    --secondary-foreground: var(--neutral-900);
+    --muted: var(--neutral-100);
+    --muted-foreground: var(--neutral-600);
+    --accent: var(--neutral-100);
+    --accent-foreground: var(--neutral-900);
+    --destructive: var(--error);
+    --destructive-foreground: 0 0% 100%;
+    --border: var(--neutral-200);
+    --input: var(--neutral-200);
+    --ring: var(--primary-500);
+    
+    /* 圆角 - 苹果设计风格 */
+    --radius-sm: 0.5rem;  /* 8px */
+    --radius-md: 0.75rem; /* 12px */
+    --radius-lg: 1rem;    /* 16px */
+    --radius-xl: 1.25rem; /* 20px */
+    --radius-2xl: 1.5rem; /* 24px */
+    --radius-full: 9999px;
+  }
+ 
+  .dark {
+    /* 主题变量 - 深色模式 */
+    --background: 220 20% 9%; /* 更接近苹果深色模式 */
+    --foreground: var(--neutral-100);
+    --card: 222 22% 12%;
+    --card-foreground: var(--neutral-100);
+    --popover: 222 22% 12%;
+    --popover-foreground: var(--neutral-100);
+    --primary: var(--primary-500);
+    --primary-foreground: var(--neutral-50);
+    --secondary: 216 15% 16%;
+    --secondary-foreground: var(--neutral-100);
+    --muted: 216 15% 16%;
+    --muted-foreground: var(--neutral-400);
+    --accent: 216 15% 16%;
+    --accent-foreground: var(--neutral-100);
+    --destructive: var(--error);
+    --destructive-foreground: var(--neutral-50);
+    --border: 216 15% 16%;
+    --input: 216 15% 16%;
+    --ring: var(--primary-500);
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    /* 平滑滚动 */
+    scroll-behavior: smooth;
+    /* 防止在一些移动浏览器中意外放大字体 */
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "ss03", "cv01", "cv02", "cv03";
+    /* 禁用用户选择以获得更原生的感觉 */
+    -webkit-user-select: none;
+    user-select: none;
+    /* 改善字体渲染 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 在支持触摸的设备上优化点击 */
+    -webkit-tap-highlight-color: transparent;
+    /* 苹果系统字体 */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  /* 容器样式 */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* 标题样式 - 苹果风格更偏向于较细的字重 */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl font-semibold;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl font-medium;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl font-medium;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl font-medium;
+  }
+  
+  /* 允许选择文本的元素 */
+  p, li, code, blockquote {
+    @apply select-text;
+  }
+  
+  /* 链接的基础样式 */
+  a {
+    @apply transition-colors;
+  }
+}
+
+/* 工具类 */
+@layer utilities {
+  /* 磨砂玻璃效果 - 苹果风格毛玻璃 */
+  .glass {
+    @apply bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* 轻微磨砂效果 */
+  .glass-subtle {
+    @apply bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* 格子背景 */
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  }
+  
+  .dark .bg-grid {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  }
+  
+  /* Cursor官网风格的渐变背景 */
+  .bg-cursor-gradient {
+    background: linear-gradient(90deg, 
+      hsl(var(--gradient-purple)) 0%, 
+      hsl(var(--gradient-pink)) 50%, 
+      hsl(var(--gradient-green)) 100%);
+  }
+  
+  /* 亮色渐变背景 */
+  .bg-cursor-gradient-light {
+    background: linear-gradient(90deg, 
+      hsla(var(--gradient-purple), 0.1) 0%, 
+      hsla(var(--gradient-pink), 0.1) 50%, 
+      hsla(var(--gradient-green), 0.1) 100%);
+  }
+  
+  /* 文本渐变 */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, 
+      hsl(var(--gradient-purple)) 0%, 
+      hsl(var(--gradient-pink)) 50%, 
+      hsl(var(--gradient-green)) 100%);
+  }
+  
+  /* 苹果风格阴影 */
+  .shadow-apple {
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06), 
+                0px 8px 16px rgba(0, 0, 0, 0.04);
+  }
+  
+  .dark .shadow-apple {
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15), 
+                0px 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 灵动岛风格的阴影 */
+  .shadow-dynamic {
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08),
+                0px 12px 24px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark .shadow-dynamic {
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.2),
+                0px 12px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* 升起悬停效果 */
+  .hover-lift {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.05), 
+                0px 20px 40px rgba(0, 0, 0, 0.03);
+  }
+  
+  /* 苹果动画缓动函数 */
+  .ease-spring {
+    transition-timing-function: cubic-bezier(0.5, 1.5, 0.5, 1);
+  }
+  
+  .ease-apple {
+    transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+  
+  .ease-apple-in {
+    transition-timing-function: cubic-bezier(0.42, 0, 1, 1);
+  }
+  
+  .ease-apple-out {
+    transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+  }
+  
+  /* 活动分类菜单项样式 */
+  .category-active {
+    @apply bg-primary/10 text-primary font-medium;
+    position: relative;
+  }
+  
+  .category-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    @apply bg-primary rounded-r;
+  }
+  
+  /* 分类卡片网格 */
+  .category-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+} 
