@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 10% 3.9%;
+    --primary: 262 83.3% 57.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 220 5% 95.9%;
+    --secondary-foreground: 220 5.9% 10%;
+    --muted: 220 5% 95.9%;
+    --muted-foreground: 220 3.8% 46.1%;
+    --accent: 220 5% 95.9%;
+    --accent-foreground: 220 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 5.9% 90%;
+    --input: 220 5.9% 90%;
+    --ring: 262 83.3% 57.8%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 225 10% 98%;
+    --card: 224 71% 4%;
+    --card-foreground: 225 10% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 225 10% 98%;
+    --primary: 263 83.3% 57.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 225 10% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 215 28% 17%;
+    --accent-foreground: 225 10% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 225 10% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 263 83.3% 57.8%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: 
+      radial-gradient(circle at 20% 35%, rgba(88, 36, 226, 0.07) 0%, transparent 40%),
+      radial-gradient(circle at 80% 10%, rgba(228, 37, 117, 0.05) 0%, transparent 35%);
+  }
+  
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(88, 36, 226, 0.15) 0%, transparent 45%),
+      radial-gradient(circle at 75% 15%, rgba(228, 37, 117, 0.1) 0%, transparent 30%),
+      linear-gradient(to bottom right, rgba(0, 0, 0, 0), rgba(13, 18, 24, 0.8));
+  }
+}
+
+@layer utilities {
+  .bg-cursor-gradient {
+    background: linear-gradient(135deg, #5824e2 0%, #e42575 50%, #ff8a45 100%);
+  }
+  
+  .bg-cursor-gradient-subtle {
+    background: linear-gradient(135deg, rgba(88, 36, 226, 0.1) 0%, rgba(228, 37, 117, 0.05) 50%, rgba(255, 138, 69, 0.1) 100%);
+  }
+  
+  .bg-cursor-gradient-dark {
+    background: linear-gradient(135deg, rgba(88, 36, 226, 0.2) 0%, rgba(228, 37, 117, 0.1) 50%, rgba(255, 138, 69, 0.2) 100%);
+  }
+  
+  .text-cursor-gradient {
+    background: linear-gradient(135deg, #5824e2 0%, #e42575 50%, #ff8a45 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .dark .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark .glass-effect {
+    background: rgba(18, 24, 38, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
