@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
-// 定义类型接口
+// Define interface for mongoose connection
 interface MongooseConnection {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
-// 为全局变量声明类型
+// Declare global type
 declare global {
   // eslint-disable-next-line no-var
   var mongoose: MongooseConnection | undefined;
@@ -30,15 +30,15 @@ async function connectDB() {
       bufferCommands: false,
     };
 
-    console.log('尝试连接MongoDB...', MONGODB_URI.split('@').pop()); // 安全地打印URI（不包含凭据）
+    console.log('Connecting to MongoDB...', MONGODB_URI.split('@').pop()); // Safely print URI (without credentials)
     
     cached.promise = mongoose.connect(MONGODB_URI, opts)
       .then((mongoose) => {
-        console.log('MongoDB连接成功');
+        console.log('MongoDB connected successfully');
         return mongoose;
       })
       .catch((err) => {
-        console.error('MongoDB连接失败:', err.message);
+        console.error('MongoDB connection failed:', err.message);
         throw err;
       });
   }
@@ -47,8 +47,8 @@ async function connectDB() {
     cached.conn = await cached.promise;
     return cached.conn;
   } catch (error) {
-    console.error('MongoDB连接出错:', error instanceof Error ? error.message : String(error));
-    // 重置连接缓存，以便下次尝试重新连接
+    console.error('MongoDB connection error:', error instanceof Error ? error.message : String(error));
+    // Reset connection cache for next attempt
     cached.promise = null;
     cached.conn = null;
     throw error;

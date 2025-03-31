@@ -1,33 +1,71 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WebsiteFormData, Category } from '@/types';
 import { ScrapedWebsiteInfo } from '@/lib/scraper';
+import { useRouter } from 'next/navigation';
 
 interface WebsiteFormProps {
-  initialData?: WebsiteFormData;
-  categories: Category[];
-  onSubmit: (data: WebsiteFormData) => void;
-  isSubmitting: boolean;
+  websiteId?: string;
 }
 
-const WebsiteForm: React.FC<WebsiteFormProps> = ({
-  initialData,
-  categories,
-  onSubmit,
-  isSubmitting
-}) => {
+const WebsiteForm: React.FC<WebsiteFormProps> = ({ websiteId }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState<WebsiteFormData>({
-    name: initialData?.name || '',
-    url: initialData?.url || '',
-    description: initialData?.description || '',
-    icon: initialData?.icon || '',
-    categoryId: initialData?.categoryId || (categories[0]?.id || ''),
+    name: '',
+    url: '',
+    description: '',
+    icon: '',
+    category: '',
   });
-  
-  const [urlInput, setUrlInput] = useState(initialData?.url || '');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  useEffect(() => {
+    fetchCategories();
+    if (websiteId) {
+      fetchWebsiteData();
+    }
+  }, [websiteId]);
+  
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('获取分类列表失败');
+      const data = await response.json();
+      setCategories(data);
+      
+      // 如果没有选择分类，默认选择第一个分类
+      if (!formData.category && data.length > 0) {
+        setFormData(prev => ({ ...prev, category: data[0].name }));
+      }
+    } catch (err) {
+      setError('获取分类列表失败');
+      console.error('获取分类列表失败:', err);
+    }
+  };
+  
+  const fetchWebsiteData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/websites/${websiteId}`);
+      if (!response.ok) throw new Error('获取网站信息失败');
+      const data = await response.json();
+      setFormData({
+        name: data.name || '',
+        url: data.url || '',
+        description: data.description || '',
+        icon: data.icon || '',
+        category: data.category || '',
+      });
+    } catch (err) {
+      setError('获取网站信息失败');
+      console.error('获取网站信息失败:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -36,13 +74,39 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const url = websiteId ? `/api/websites/${websiteId}` : '/api/websites';
+      const method = websiteId ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '保存失败');
+      }
+
+      router.push('/admin/websites');
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '保存网站信息失败');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleFetchInfo = async () => {
-    if (!urlInput) {
+    if (!formData.url) {
       setError('请输入网站链接');
       return;
     }
@@ -56,7 +120,7 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: urlInput }),
+        body: JSON.stringify({ url: formData.url }),
       });
       
       if (!response.ok) {
@@ -65,13 +129,12 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
       
       const websiteInfo: ScrapedWebsiteInfo = await response.json();
       
-      setFormData({
+      setFormData(prev => ({
+        ...prev,
         name: websiteInfo.title,
-        url: websiteInfo.url,
         description: websiteInfo.description,
         icon: websiteInfo.icon,
-        categoryId: formData.categoryId,
-      });
+      }));
     } catch (err) {
       setError(err instanceof Error ? err.message : '抓取网站信息失败');
     } finally {
@@ -91,8 +154,8 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
               type="url"
               id="url"
               name="url"
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
+              value={formData.url}
+              onChange={handleInputChange}
               placeholder="https://example.com"
               className="flex-1 rounded-l-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
@@ -171,19 +234,20 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
         </div>
         
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             分类 *
           </label>
           <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
+            id="category"
+            name="category"
+            value={formData.category}
             onChange={handleInputChange}
             className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           >
+            <option value="">请选择分类</option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option key={category._id} value={category.name}>
                 {category.name}
               </option>
             ))}
@@ -195,9 +259,9 @@ const WebsiteForm: React.FC<WebsiteFormProps> = ({
         <button
           type="submit"
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
-          disabled={isSubmitting}
+          disabled={isLoading}
         >
-          {isSubmitting ? "提交中..." : initialData ? "更新网站" : "添加网站"}
+          {isLoading ? "提交中..." : websiteId ? "更新网站" : "添加网站"}
         </button>
       </div>
     </form>

@@ -4,8 +4,8 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 relative z-10">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pl-[250px] md:pl-4">
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex justify-center md:order-2 space-x-6">
             <Link

@@ -1,27 +1,22 @@
+import { Types } from 'mongoose';
+
 export interface Website {
-  id?: string;
-  _id?: string;
+  _id: string;
   name: string;
   url: string;
   description: string;
   icon: string;
-  categoryId: string;
-  metadata?: Map<string, string>;
-  createdAt: Date;
-  updatedAt: Date;
+  category: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Category {
-  id?: string;
-  _id?: string;
+  _id: string;
   name: string;
-  slug: string;
   description?: string;
-  icon?: string;
-  websites?: Website[];
-  order: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface WebsiteFormData {
@@ -29,12 +24,11 @@ export interface WebsiteFormData {
   url: string;
   description: string;
   icon: string;
-  categoryId: string;
+  category: string;
 }
 
 export interface CategoryFormData {
   name: string;
-  slug: string;
-  description?: string;
-  order: number;
+  description: string;
+  icon: string;
 } 

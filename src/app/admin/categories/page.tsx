@@ -68,11 +68,11 @@ export default function CategoriesPage() {
   };
   
   const handleUpdateCategory = async (formData: CategoryFormData) => {
-    if (!selectedCategory) return;
+    if (!selectedCategory?._id) return;
     
     try {
       setIsSubmitting(true);
-      const response = await fetch(`/api/categories/${selectedCategory.id}`, {
+      const response = await fetch(`/api/categories/${selectedCategory._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ export default function CategoriesPage() {
   };
   
   const handleReorderCategory = async (category: Category, direction: 'up' | 'down') => {
-    const currentIndex = categories.findIndex((c) => c.id === category.id);
+    const currentIndex = categories.findIndex((c) => c._id === category._id);
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     
     // 检查边界条件
@@ -144,13 +144,13 @@ export default function CategoriesPage() {
     
     try {
       // 交换两个分类的order值
-      const updateCurrentCategory = fetch(`/api/categories/${category.id}`, {
+      const updateCurrentCategory = fetch(`/api/categories/${category._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order: targetCategory.order }),
       });
       
-      const updateTargetCategory = fetch(`/api/categories/${targetCategory.id}`, {
+      const updateTargetCategory = fetch(`/api/categories/${targetCategory._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order: category.order }),

@@ -9,7 +9,10 @@ interface Params {
 }
 
 // 获取单个网站
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     await connectDB();
     const website = await Website.findById(params.id);
@@ -23,9 +26,8 @@ export async function GET(request: NextRequest, { params }: Params) {
     
     return NextResponse.json(website);
   } catch (error) {
-    console.error('获取网站失败:', error);
     return NextResponse.json(
-      { error: '获取网站失败' },
+      { error: '获取网站信息失败' },
       { status: 500 }
     );
   }

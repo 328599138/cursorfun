@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Category } from "@/types";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
+import { Icon } from "./ui/Icon";
 
 interface SidebarProps {
   categories: Category[];
@@ -68,20 +69,13 @@ export function Sidebar({ categories, activeCategoryId, onCategoryChange }: Side
                     transition={{ delay: categories.indexOf(category) * 0.1 }}
                     className="flex items-center w-full"
                   >
-                    {/* 根据分类名称添加自定义图标 */}
-                    {category.icon ? (
-                      <div className="h-7 w-7 mr-3 rounded-md overflow-hidden flex items-center justify-center bg-white/20 dark:bg-white/10 backdrop-blur-sm">
-                        <img src={category.icon} alt={category.name} className="h-5 w-5 object-contain" />
-                      </div>
-                    ) : (
-                      <div className={`h-7 w-7 mr-3 flex items-center justify-center rounded-md ${
-                        selectedCategory === categoryId 
-                          ? "bg-white/20 text-white" 
-                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                      }`}>
-                        {category.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
+                    <div className={`h-7 w-7 mr-3 flex items-center justify-center rounded-md ${
+                      selectedCategory === categoryId 
+                        ? "bg-white/20 text-white" 
+                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                    }`}>
+                      <Icon name={category.name} className="h-5 w-5" />
+                    </div>
                     {category.name}
                   </motion.div>
                 </button>

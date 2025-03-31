@@ -67,9 +67,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* 侧边栏 - 桌面 */}
-      <aside className="hidden md:flex flex-col w-72 min-h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-md">
+      <aside className="hidden md:flex flex-col w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-md">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             管理后台
@@ -121,8 +121,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </aside>
 
-      {/* 主内容 */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      {/* 主内容区域 */}
+      <div className="flex flex-col flex-1">
         {/* 顶部导航 - 移动端 */}
         <header className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between p-4">
@@ -197,9 +197,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         )}
 
         {/* 内容区域 */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>
+
+        {/* 底部版权信息 */}
+        <footer className="py-4 px-6 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            &copy; {new Date().getFullYear()} CursorFun. All rights reserved.
+          </p>
+        </footer>
       </div>
     </div>
   );

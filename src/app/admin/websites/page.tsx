@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Website, Category, WebsiteFormData } from '@/types';
+import { useState, useEffect, Suspense } from 'react';
+import { Website, Category } from '@/types';
 import AdminLayout from '@/components/admin/AdminLayout';
 import WebsiteForm from '@/components/admin/WebsiteForm';
 import { FiEdit2, FiTrash2, FiSearch, FiLink } from 'react-icons/fi';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function WebsitesPage() {
   const [websites, setWebsites] = useState<Website[]>([]);
@@ -15,6 +16,10 @@ export default function WebsitesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  
+  const searchParams = useSearchParams();
+  const websiteId = searchParams.get('edit') || undefined;
+  const router = useRouter();
   
   const fetchWebsites = async () => {
     try {
@@ -50,67 +55,9 @@ export default function WebsitesPage() {
     fetchWebsites();
   }, []);
   
-  const handleAddWebsite = async (formData: WebsiteFormData) => {
+  const handleDeleteWebsite = async (websiteId: string) => {
     try {
-      setIsSubmitting(true);
-      const response = await fetch('/api/websites', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '添加网站失败');
-      }
-      
-      // 重新获取网站列表
-      await fetchWebsites();
-      
-      // 重置表单
-      setSelectedWebsite(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '添加网站失败');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleUpdateWebsite = async (formData: WebsiteFormData) => {
-    if (!selectedWebsite) return;
-    
-    try {
-      setIsSubmitting(true);
-      const response = await fetch(`/api/websites/${selectedWebsite.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '更新网站失败');
-      }
-      
-      // 重新获取网站列表
-      await fetchWebsites();
-      
-      // 重置表单
-      setSelectedWebsite(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '更新网站失败');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleDeleteWebsite = async (id: string) => {
-    try {
-      const response = await fetch(`/api/websites/${id}`, {
+      const response = await fetch(`/api/websites/${websiteId}`, {
         method: 'DELETE',
       });
       
@@ -124,23 +71,24 @@ export default function WebsitesPage() {
       
       // 关闭弹窗
       setIsDeleteModalOpen(false);
+      setSelectedWebsite(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : '删除网站失败');
     }
   };
   
-  const getCategoryName = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category ? category.name : '未分类';
+  const getCategoryName = (category: string) => {
+    return category || '未分类';
   };
   
   const filteredWebsites = websites.filter((website) => {
+    if (!website) return false;
     const query = searchQuery.toLowerCase();
     return (
-      website.name.toLowerCase().includes(query) ||
-      website.description.toLowerCase().includes(query) ||
-      website.url.toLowerCase().includes(query) ||
-      getCategoryName(website.categoryId).toLowerCase().includes(query)
+      (website.name?.toLowerCase() || '').includes(query) ||
+      (website.description?.toLowerCase() || '').includes(query) ||
+      (website.url?.toLowerCase() || '').includes(query) ||
+      (website.category?.toLowerCase() || '').includes(query)
     );
   });
   
@@ -149,14 +97,12 @@ export default function WebsitesPage() {
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">网站管理</h1>
         
-        {/* 错误提示 */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-600 dark:text-red-400">
             {error}
           </div>
         )}
         
-        {/* 搜索框 */}
         <div className="mb-6">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -172,27 +118,16 @@ export default function WebsitesPage() {
           </div>
         </div>
         
-        {/* 网站表单 */}
         <div className="mb-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            {selectedWebsite ? '编辑网站' : '添加新网站'}
+            {websiteId ? '编辑网站' : '添加新网站'}
           </h2>
           
-          <WebsiteForm
-            initialData={selectedWebsite ? {
-              name: selectedWebsite.name,
-              url: selectedWebsite.url,
-              description: selectedWebsite.description,
-              icon: selectedWebsite.icon,
-              categoryId: selectedWebsite.categoryId,
-            } : undefined}
-            categories={categories}
-            onSubmit={selectedWebsite ? handleUpdateWebsite : handleAddWebsite}
-            isSubmitting={isSubmitting}
-          />
+          <Suspense fallback={<div>加载中...</div>}>
+            <WebsiteForm websiteId={websiteId} />
+          </Suspense>
         </div>
         
-        {/* 网站列表 */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
           <h2 className="p-4 text-xl font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
             网站列表
@@ -227,7 +162,7 @@ export default function WebsitesPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredWebsites.map((website) => (
-                    <tr key={website.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/80">
+                    <tr key={website._id.toString()} className="hover:bg-gray-50 dark:hover:bg-gray-800/80">
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <img
@@ -250,7 +185,7 @@ export default function WebsitesPage() {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 text-xs rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-                          {getCategoryName(website.categoryId)}
+                          {getCategoryName(website.category)}
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm">
@@ -266,8 +201,8 @@ export default function WebsitesPage() {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
-                          onClick={() => setSelectedWebsite(website)}
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 mr-4"
+                          onClick={() => router.push(`/admin/websites?edit=${website._id}`)}
+                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 mr-4 cursor-pointer"
                         >
                           <FiEdit2 className="inline-block" />
                           <span className="sr-only">编辑</span>
@@ -277,7 +212,7 @@ export default function WebsitesPage() {
                             setSelectedWebsite(website);
                             setIsDeleteModalOpen(true);
                           }}
-                          className="text-red-600 dark:text-red-400 hover:text-red-900"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 cursor-pointer"
                         >
                           <FiTrash2 className="inline-block" />
                           <span className="sr-only">删除</span>
@@ -292,7 +227,6 @@ export default function WebsitesPage() {
         </div>
       </div>
       
-      {/* 删除确认弹窗 */}
       {isDeleteModalOpen && selectedWebsite && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full">
@@ -310,7 +244,7 @@ export default function WebsitesPage() {
                 取消
               </button>
               <button
-                onClick={() => handleDeleteWebsite(selectedWebsite.id)}
+                onClick={() => handleDeleteWebsite(selectedWebsite._id)}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
                 删除

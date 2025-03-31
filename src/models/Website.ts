@@ -1,29 +1,33 @@
-import mongoose, { Schema, models } from 'mongoose';
-import { Website } from '@/types';
+import mongoose from 'mongoose';
 
-const websiteSchema = new Schema<Website>(
-  {
-    name: { type: String, required: true },
-    url: { type: String, required: true, unique: true },
-    description: { type: String, required: true },
-    icon: { type: String, required: true },
-    categoryId: { 
-      type: String, 
-      required: true,
-      ref: 'Category'
-    },
-    metadata: { 
-      type: Map,
-      of: String,
-      default: new Map()
-    }
+const WebsiteSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, '请输入网站名称'],
+    trim: true,
   },
-  { timestamps: true }
-);
+  url: {
+    type: String,
+    required: [true, '请输入网站链接'],
+    trim: true,
+  },
+  description: {
+    type: String,
+    required: [true, '请输入网站描述'],
+    trim: true,
+  },
+  icon: {
+    type: String,
+    required: [true, '请输入图标链接'],
+    trim: true,
+  },
+  category: {
+    type: String,
+    required: [true, '请选择分类'],
+    trim: true,
+  }
+}, {
+  timestamps: true,
+});
 
-// 创建索引以加快查询速度
-websiteSchema.index({ categoryId: 1 });
-// unique: true 已经在字段定义中创建了索引，因此这里不需要重复定义
-// websiteSchema.index({ url: 1 }, { unique: true });
-
-export default models.Website || mongoose.model<Website>('Website', websiteSchema); 
+export default mongoose.models.Website || mongoose.model('Website', WebsiteSchema); 

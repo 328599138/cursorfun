@@ -4,9 +4,9 @@ import { Category } from '@/types';
 const categorySchema = new Schema<Category>(
   {
     name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    description: { type: String },
-    order: { type: Number, required: true, default: 0 },
+    description: { type: String, required: true },
+    icon: { type: String, required: true },
+    slug: { type: String, required: true, unique: true }
   },
   { timestamps: true }
 );

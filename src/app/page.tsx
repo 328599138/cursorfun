@@ -17,17 +17,17 @@ export default function Home() {
       try {
         setIsLoading(true);
         
-        // 获取所有分类
+        // Fetch all categories
         const categoryRes = await fetch('/api/categories');
-        if (!categoryRes.ok) throw new Error('获取分类失败');
+        if (!categoryRes.ok) throw new Error('Failed to fetch categories');
         const categoriesData = await categoryRes.json();
         
-        // 获取所有网站
+        // Fetch all websites
         const websiteRes = await fetch('/api/websites');
-        if (!websiteRes.ok) throw new Error('获取网站失败');
+        if (!websiteRes.ok) throw new Error('Failed to fetch websites');
         const websitesData = await websiteRes.json();
         
-        // 将网站数据关联到对应的分类中
+        // Associate websites with their categories
         const categoriesWithWebsites = categoriesData.map((category: Category) => ({
           ...category,
           websites: websitesData.filter((website: Website) => 
@@ -37,15 +37,15 @@ export default function Home() {
         
         setCategories(categoriesWithWebsites);
         
-        // 设置第一个分类为活动分类
+        // Set first category as active
         if (categoriesWithWebsites.length > 0) {
           setActiveCategoryId(categoriesWithWebsites[0]._id || categoriesWithWebsites[0].id);
         }
         
         setError(null);
       } catch (err) {
-        console.error('数据加载错误:', err);
-        setError('无法加载数据，请检查数据库连接');
+        console.error('Error loading data:', err);
+        setError('Unable to load data. Please check database connection.');
       } finally {
         setIsLoading(false);
       }
@@ -115,7 +115,10 @@ export default function Home() {
 
         <div className="divide-y divide-gray-200 dark:divide-gray-800 relative z-10">
           {categories.map((category) => (
-            <CategorySection key={category._id || category.id} category={category} />
+            <CategorySection 
+              key={category._id?.toString() || category.id || ''} 
+              category={category} 
+            />
           ))}
         </div>
       </div>

@@ -1,12 +1,23 @@
 "use client";
 
-import { Category } from "@/types";
-import { WebsiteCard } from "./WebsiteCard";
 import { motion } from "framer-motion";
+import { WebsiteCard } from "./WebsiteCard";
+import { Category, Website } from "@/types";
+import { Types } from 'mongoose';
 
 interface CategorySectionProps {
-  category: Category;
+  category: Category & {
+    websites?: Website[];
+    _id?: Types.ObjectId;
+    id?: string;
+  };
 }
+
+const isEmoji = (str: string | undefined): boolean => {
+  if (!str) return false;
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u;
+  return emojiRegex.test(str);
+};
 
 export function CategorySection({ category }: CategorySectionProps) {
   if (!category.websites || category.websites.length === 0) {
@@ -15,7 +26,7 @@ export function CategorySection({ category }: CategorySectionProps) {
 
   return (
     <motion.section
-      key={category._id || category.id}
+      key={category._id?.toString() || category.id}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -31,7 +42,11 @@ export function CategorySection({ category }: CategorySectionProps) {
           className="text-2xl font-bold text-gray-900 dark:text-white flex items-center"
         >
           {category.icon ? (
-            <img src={category.icon} alt={category.name} className="h-7 w-7 mr-3 object-contain" />
+            isEmoji(category.icon) ? (
+              <span className="text-2xl mr-3">{category.icon}</span>
+            ) : (
+              <img src={category.icon} alt={category.name} className="h-7 w-7 mr-3 object-contain" />
+            )
           ) : (
             <div className="h-7 w-7 mr-3 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-md flex items-center justify-center text-white text-sm font-bold">
               {category.name.charAt(0)}
@@ -52,7 +67,7 @@ export function CategorySection({ category }: CategorySectionProps) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {category.websites.map((website, index) => (
-          <WebsiteCard key={website._id || website.id} website={website} index={index} />
+          <WebsiteCard key={website._id?.toString() || website.id} website={website} index={index} />
         ))}
       </div>
     </motion.section>

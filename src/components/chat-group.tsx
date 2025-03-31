@@ -4,14 +4,20 @@ import * as React from "react"
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { useDB } from "@/hooks/useDB"
 import { type Locale, getTranslations } from "@/lib/i18n"
-import { useDB } from "@/lib/db"
 import { QRCodeIcon } from "./icons"
 import { cn } from "@/lib/utils"
 
+interface QRCode {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 export function ChatGroup() {
   const { qrCodes } = useDB()
-  const [qrCode, setQrCode] = useState({ id: "1", name: "微信群", imageUrl: "/qrcode.jpg" })
+  const [qrCode, setQrCode] = useState<QRCode>({ id: "1", name: "WeChat Group", imageUrl: "/qrcode.jpg" })
   const [isOpen, setIsOpen] = useState(false)
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [showSaveTip, setShowSaveTip] = useState(false)
@@ -24,26 +30,26 @@ export function ChatGroup() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isTouchDevice = useRef(false)
 
-  // 检测是否为触摸设备
+  // Check if device is touch-enabled
   useEffect(() => {
     if (typeof window !== 'undefined') {
       isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0
     }
   }, [])
   
-  // 客户端挂载完成后再进行初始化
+  // Initialize after client-side mount
   useEffect(() => {
     setIsMounted(true)
     if (qrCodes?.[0]) {
       setQrCode(qrCodes[0])
-      // 预加载图片
+      // Preload image
       const img = new window.Image()
       img.src = qrCodes[0].imageUrl
       img.onload = () => setIsImageLoaded(true)
     }
   }, [qrCodes])
 
-  // 点击外部关闭弹窗
+  // Close popover when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -65,7 +71,7 @@ export function ChatGroup() {
     }
   }, [isOpen])
 
-  // 处理鼠标悬停
+  // Handle mouse hover
   const handleMouseEnter = () => {
     if (isTouchDevice.current) return
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -77,7 +83,7 @@ export function ChatGroup() {
     timeoutRef.current = setTimeout(() => setIsOpen(false), 300)
   }
 
-  // 处理长按保存
+  // Handle long press to save
   const handleLongPress = () => {
     setShowSaveTip(true)
     setTimeout(() => setShowSaveTip(false), 2000)
@@ -100,7 +106,7 @@ export function ChatGroup() {
           "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2",
           isOpen && "bg-primary/90"
         )}
-        aria-label={locale === 'en' ? 'Open WeChat group QR code' : '打开微信群二维码'}
+        aria-label="Open WeChat group QR code"
       >
         <QRCodeIcon className="h-6 w-6" />
       </button>
@@ -122,7 +128,7 @@ export function ChatGroup() {
         <div className="flex flex-col items-center">
           <h3 className="text-base font-medium mb-2">{qrCode.name}</h3>
           <p className="mb-4 text-sm text-muted-foreground text-center">
-            {t.common.scanQR || '扫描下方二维码加入交流群'}
+            {t.common.scanQR || 'Scan QR code to join the community'}
           </p>
           
           <div
@@ -151,12 +157,12 @@ export function ChatGroup() {
               priority
             />
             
-            {/* 保存提示 */}
+            {/* Save tip */}
             <div className={cn(
               "absolute inset-x-0 bottom-0 bg-black/70 text-white text-xs p-2 text-center transition-all duration-300",
               showSaveTip ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full"
             )}>
-              长按图片可保存二维码到相册
+              Long press to save QR code to your gallery
             </div>
           </div>
         </div>

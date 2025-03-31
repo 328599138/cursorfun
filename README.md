@@ -126,17 +126,24 @@ sequenceDiagram
 
 1. 克隆项目仓库
 2. 安装依赖：`npm install`
-3. 创建 `.env.local` 文件并配置 MongoDB 连接
-4. 启动开发服务器：`npm run dev`
-5. 访问：`http://localhost:3000`
+3. 创建 `.env.local` 文件并配置 MongoDB 连接：
+   ```
+   MONGODB_URI=你的MongoDB连接字符串
+   NODE_ENV=development
+   ```
+4. 初始化数据库：`npm run init-db`
+5. 启动开发服务器：`npm run dev`
+6. 访问：`http://localhost:3000`
 
 ## 部署说明
 
 推荐使用 Vercel 一键部署：
 
 1. 在 Vercel 导入 GitHub 仓库
-2. 配置环境变量 `MONGODB_URI`
+2. 配置环境变量：
+   - `MONGODB_URI`: MongoDB Atlas 连接字符串
 3. 部署项目
+4. 初始化数据库：`npm run init-db`
 
 ## 开发者信息
 
