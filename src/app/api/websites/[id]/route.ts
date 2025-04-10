@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/db';
+import { connectDB } from '@/lib/db';
 import Website from '@/models/Website';
-
-interface Params {
-  params: {
-    id: string;
-  };
-}
 
 // 获取单个网站
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await connectDB();
-    const website = await Website.findById(params.id);
+    const website = await Website.findById(context.params.id);
     
     if (!website) {
       return NextResponse.json(
@@ -34,7 +28,10 @@ export async function GET(
 }
 
 // 更新网站
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
     const data = await request.json();
     
@@ -44,7 +41,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (data.url) {
       const existing = await Website.findOne({ 
         url: data.url,
-        _id: { $ne: params.id }
+        _id: { $ne: context.params.id }
       });
       
       if (existing) {
@@ -67,7 +64,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
     
     const updatedWebsite = await Website.findByIdAndUpdate(
-      params.id,
+      context.params.id,
       { $set: data },
       { new: true, runValidators: true }
     );
@@ -90,11 +87,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 // 删除网站
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
     await connectDB();
     
-    const deletedWebsite = await Website.findByIdAndDelete(params.id);
+    const deletedWebsite = await Website.findByIdAndDelete(context.params.id);
     
     if (!deletedWebsite) {
       return NextResponse.json(
