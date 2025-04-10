@@ -12,47 +12,48 @@ declare global {
   var mongoose: MongooseConnection | undefined;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cursorfun';
+const MONGODB_URI = process.env.MONGODB_URI!;
 
-const cached: MongooseConnection = global.mongoose || { conn: null, promise: null };
+if (!MONGODB_URI) {
+  throw new Error('请在环境变量中设置 MONGODB_URI');
+}
+
+let cached: MongooseConnection = global.mongoose || { conn: null, promise: null };
 
 if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-async function connectDB() {
+export async function connectDB() {
   if (cached.conn) {
+    console.log('使用已有的MongoDB连接');
     return cached.conn;
   }
 
-  if (!cached.promise) {
+  try {
     const opts = {
       bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
-    console.log('Connecting to MongoDB...', MONGODB_URI.split('@').pop()); // Safely print URI (without credentials)
+    console.log('正在连接MongoDB...');
     
-    cached.promise = mongoose.connect(MONGODB_URI, opts)
-      .then((mongoose) => {
-        console.log('MongoDB connected successfully');
-        return mongoose;
-      })
-      .catch((err) => {
-        console.error('MongoDB connection failed:', err.message);
-        throw err;
-      });
-  }
-  
-  try {
+    if (!cached.promise) {
+      cached.promise = mongoose.connect(MONGODB_URI, opts);
+    }
+
     cached.conn = await cached.promise;
+    console.log('MongoDB连接成功');
     return cached.conn;
   } catch (error) {
-    console.error('MongoDB connection error:', error instanceof Error ? error.message : String(error));
-    // Reset connection cache for next attempt
-    cached.promise = null;
-    cached.conn = null;
+    console.error('MongoDB连接错误:', error instanceof Error ? error.message : String(error));
+    cached = { conn: null, promise: null };
+    global.mongoose = cached;
     throw error;
   }
 }
 
-export default connectDB; 
+// 添加默认导出
+export default { connectDB }; 
