@@ -5,11 +5,11 @@ import Category from '@/models/Category';
 // 获取单个分类
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await connectDB();
-    const category = await Category.findById(params.id);
+    const category = await Category.findById(context.params.id);
     
     if (!category) {
       return NextResponse.json(
@@ -31,7 +31,7 @@ export async function GET(
 // 更新分类
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const data = await request.json();
@@ -42,7 +42,7 @@ export async function PUT(
     if (data.slug) {
       const existing = await Category.findOne({ 
         slug: data.slug,
-        _id: { $ne: params.id }
+        _id: { $ne: context.params.id }
       });
       
       if (existing) {
@@ -54,7 +54,7 @@ export async function PUT(
     }
     
     const updatedCategory = await Category.findByIdAndUpdate(
-      params.id,
+      context.params.id,
       { $set: data },
       { new: true, runValidators: true }
     );
@@ -79,12 +79,12 @@ export async function PUT(
 // 删除分类
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await connectDB();
     
-    const deletedCategory = await Category.findByIdAndDelete(params.id);
+    const deletedCategory = await Category.findByIdAndDelete(context.params.id);
     
     if (!deletedCategory) {
       return NextResponse.json(
