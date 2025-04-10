@@ -2,15 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { Category } from "@/types";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, BookOpen, Code, List, Network, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { Icon } from "./ui/Icon";
 
 interface SidebarProps {
   categories: Category[];
   activeCategoryId: string | null;
   onCategoryChange: (categoryId: string) => void;
 }
+
+// Helper function to map iconName to Lucide component
+const renderIcon = (iconName: string | undefined) => {
+  const IconComponent = {
+    BookOpen,
+    Code,
+    List,
+    Network,
+  }[iconName || ''] || HelpCircle; // Use HelpCircle as fallback
+
+  return <IconComponent className="h-5 w-5" />;
+};
 
 export function Sidebar({ categories, activeCategoryId, onCategoryChange }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
@@ -24,7 +35,7 @@ export function Sidebar({ categories, activeCategoryId, onCategoryChange }: Side
   }, [activeCategoryId]);
 
   const handleCategoryClick = (category: Category) => {
-    const categoryId = category._id || category.id;
+    const categoryId = category._id;
     if (categoryId) {
       setSelectedCategory(categoryId);
       onCategoryChange(categoryId);
@@ -50,7 +61,7 @@ export function Sidebar({ categories, activeCategoryId, onCategoryChange }: Side
         {isOpen && (
           <div className="space-y-3">
             {categories.map((category) => {
-              const categoryId = category._id || category.id;
+              const categoryId = category._id;
               if (!categoryId) return null;
               
               return (
@@ -74,7 +85,7 @@ export function Sidebar({ categories, activeCategoryId, onCategoryChange }: Side
                         ? "bg-white/20 text-white" 
                         : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                     }`}>
-                      <Icon name={category.name} className="h-5 w-5" />
+                      {renderIcon(category.iconName)}
                     </div>
                     {category.name}
                   </motion.div>
