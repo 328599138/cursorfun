@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/db';
+import { connectDB } from '@/lib/db';
 import Category from '@/models/Category';
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
 // 获取单个分类
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     await connectDB();
     const category = await Category.findById(params.id);
@@ -32,7 +29,10 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 // 更新分类
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const data = await request.json();
     
@@ -77,7 +77,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 // 删除分类
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     await connectDB();
     
