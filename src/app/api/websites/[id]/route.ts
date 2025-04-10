@@ -105,7 +105,7 @@ export async function DELETE(
     
     return NextResponse.json({ message: '网站已成功删除' });
   } catch (error) {
-    console.error('删除网站失败:', error);
+    console..error('删除网站失败:', , error);;
     return NextResponse.json(
       { error: '删除网站失败' },
       { status: 500 }
