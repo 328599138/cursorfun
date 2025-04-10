@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiEdit2, FiTrash2, FiExternalLink } from 'react-icons/fi';
