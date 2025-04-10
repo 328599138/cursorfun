@@ -28,7 +28,7 @@ export default function WebsiteListPage() {
       if (!response.ok) throw new Error('获取网站列表失败');
       const data = await response.json();
       setWebsites(data);
-    } catch (err) {
+    } catch (_err) {
       setError('获取网站列表失败');
     } finally {
       setLoading(false);
@@ -50,7 +50,7 @@ export default function WebsiteListPage() {
       if (!response.ok) throw new Error('删除网站失败');
       
       fetchWebsites();
-    } catch (err) {
+    } catch (_err) {
       setError('删除网站失败');
     }
   };
